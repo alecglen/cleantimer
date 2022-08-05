@@ -1,0 +1,9 @@
+LICENSE
+README.md
+setup.py
+cleantimer/cleantimer.py
+cleantimer/cleantimer.egg-info/PKG-INFO
+cleantimer/cleantimer.egg-info/SOURCES.txt
+cleantimer/cleantimer.egg-info/dependency_links.txt
+cleantimer/cleantimer.egg-info/requires.txt
+cleantimer/cleantimer.egg-info/top_level.txt
