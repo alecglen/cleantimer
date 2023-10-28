@@ -53,7 +53,7 @@ class CTimer(Timer):
             CTimer: The new CTimer object.
         """
         indents = "\t" * (self.message.count("\t") + 1)
-        return CTimer(f"\n{indents}{message}", self.precision)
+        return CTimer(f"\n{indents}{message}", precision=self.precision)
 
     def progress_apply(
         self,
@@ -89,9 +89,10 @@ class CTimer(Timer):
             )
             output = concat([output, subset_results], ignore_index=True)
 
-        output.reset_index(drop=True, inplace=True)
+        if len(output.columns) == 1:
+            return output.squeeze()
 
-        return output
+        return output.reset_index(drop=True)
 
     def __progress_apply_single(
         self, df: DataFrame, action: Callable[[Series], Any], message: str
