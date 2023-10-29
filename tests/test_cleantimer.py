@@ -34,19 +34,20 @@ def test_child_timer_is_created_with_correct_indentation(capsys: CaptureFixture)
     assert stdout == "Parent...\n\tChild...done. (0.0s)\ndone. (0.0s)\n"
 
 
-# def test_multiple_child_timers_are_indented_correctly(capsys: CaptureFixture):
-#     with CTimer("Parent") as parent_timer:
-#         with parent_timer.child("Child1"):
-#             pass
-#         with parent_timer.child("Child2"):
-#             pass
+def test_multiple_child_timers_are_indented_correctly(capsys: CaptureFixture):
+    with CTimer("Parent") as parent_timer:
+        with parent_timer.child("Child1"):
+            pass
+        with parent_timer.child("Child2"):
+            pass
 
-#     lines = str(capsys.readouterr().out).split("\n")
-#     assert len(lines) == 4
-#     assert lines[0] == "Parent..."
-#     assert lines[1] == "\tChild1...done. (0.0s)"
-#     assert lines[2] == "\tChild1...done. (0.0s)"
-#     assert lines[3] == "done. (0.0s)"
+    lines = str(capsys.readouterr().out).split("\n")
+    assert len(lines) == 5
+    assert lines[0] == "Parent..."
+    assert lines[1] == "\tChild1...done. (0.0s)"
+    assert lines[2] == "\tChild2...done. (0.0s)"
+    assert lines[3] == "done. (0.0s)"
+    assert lines[4] == ""
 
 
 # def test_nested_child_timers_are_indented_correctly(capsys: CaptureFixture):
@@ -156,6 +157,7 @@ def test_progress_apply_default_renders_single_indented_unnamed_progress_bar(
 
     assert df.progress_apply.call_count == 1
     assert len(df.progress_apply.call_args[0]) == 1
+    # pylint: disable-next=comparison-with-callable
     assert df.progress_apply.call_args[0][0] == _action
     assert len(df.progress_apply.call_args[1]) == 1
     assert df.progress_apply.call_args[1]["axis"] == 1

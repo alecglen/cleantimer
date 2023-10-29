@@ -17,7 +17,7 @@ class CTimer(Timer):
         super().__init__(*args, **kwargs)
         self.message = message
         self.precision = precision
-        self.last_check = 0
+        self.is_first_child = True
 
     def __enter__(self, *args, **kwargs):
         """
@@ -27,7 +27,6 @@ class CTimer(Timer):
             CTimer: The CTimer object.
         """
         super().__enter__(*args, **kwargs)
-        self.last_check = 0
         print(self.message + "...", end="", flush=True)
         return self
 
@@ -52,8 +51,13 @@ class CTimer(Timer):
         Returns:
             CTimer: The new CTimer object.
         """
-        indents = "\t" * (self.message.count("\t") + 1)
-        return CTimer(f"\n{indents}{message}", precision=self.precision)
+        whitespace = "\t" * (self.message.count("\t") + 1)
+
+        if self.is_first_child:
+            whitespace = "\n" + whitespace
+            self.is_first_child = False
+
+        return CTimer(whitespace + message, precision=self.precision)
 
     def progress_apply(
         self,
