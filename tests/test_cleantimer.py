@@ -75,11 +75,11 @@ def test_timer_passes_through_exceptions_and_stops_run(capsys: CaptureFixture):
     assert capsys.readouterr().out == "Test Timer..."
 
 
-# def test_precision_is_set_to_zero(capsys: CaptureFixture):
-#     with CTimer("Test Timer", precision=0):
-#         pass
+def test_precision_is_set_to_zero(capsys: CaptureFixture):
+    with CTimer("Test Timer", precision=0):
+        pass
 
-#     assert capsys.readouterr().out == "Test Timer...done. (0s)\n"
+    assert capsys.readouterr().out == "Test Timer...done. (0s)\n"
 
 
 def test_child_timer_message_contains_special_characters(capsys: CaptureFixture):

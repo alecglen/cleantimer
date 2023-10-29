@@ -44,7 +44,11 @@ class CTimer(Timer):
                 msg = self.message.strip("\n")
                 indents = "\t" * (len(msg) - len(msg.lstrip("\t")))
 
-            print(f"{indents}done. ({round(self.elapsed, self.precision)}s)")
+            runtime = round(self.elapsed, self.precision)
+            if self.precision == 0:
+                runtime = int(runtime)
+
+            print(f"{indents}done. ({runtime}s)")
 
     def child(self, message: str):
         """
