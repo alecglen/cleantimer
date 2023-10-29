@@ -59,6 +59,8 @@ class CTimer(Timer):
 
         Args:
             message (str): The indented message.
+            precision (int, optional): The number of decimals to round the elapsed time.
+                Defaults to the value of the parent timer.
 
         Returns:
             CTimer: The new CTimer object.
