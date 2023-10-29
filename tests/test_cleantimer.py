@@ -50,20 +50,21 @@ def test_multiple_child_timers_are_indented_correctly(capsys: CaptureFixture):
     assert lines[4] == ""
 
 
-# def test_nested_child_timers_are_indented_correctly(capsys: CaptureFixture):
-#     with CTimer("Parent") as parent_timer:
-#         with parent_timer.child("Child") as child_timer:
-#             with child_timer.child("Grandchild"):
-#                 pass
+def test_nested_child_timers_are_indented_correctly(capsys: CaptureFixture):
+    with CTimer("Parent") as parent_timer:
+        with parent_timer.child("Child") as child_timer:
+            with child_timer.child("Grandchild"):
+                pass
 
-#     lines = str(capsys.readouterr().out).split("\n")
+    lines = str(capsys.readouterr().out).split("\n")
 
-#     assert len(lines) == 5
-#     assert lines[0] == "Parent..."
-#     assert lines[1] == "\tChild..."
-#     assert lines[2] == "\t\tGrandchild...done. (0.0s)"
-#     assert lines[3] == "\tdone. (0.0s)"
-#     assert lines[4] == "done. (0.0s)"
+    assert len(lines) == 6
+    assert lines[0] == "Parent..."
+    assert lines[1] == "\tChild..."
+    assert lines[2] == "\t\tGrandchild...done. (0.0s)"
+    assert lines[3] == "\tdone. (0.0s)"
+    assert lines[4] == "done. (0.0s)"
+    assert lines[5] == ""
 
 
 def test_timer_passes_through_exceptions_and_stops_run(capsys: CaptureFixture):

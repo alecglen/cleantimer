@@ -39,7 +39,12 @@ class CTimer(Timer):
         """
         super().__exit__(exception, *args, **kwargs)
         if not exception:
-            print(f"done. ({round(self.elapsed, self.precision)}s)")
+            indents = ""
+            if not self.is_first_child:
+                msg = self.message.strip("\n")
+                indents = "\t" * (len(msg) - len(msg.lstrip("\t")))
+
+            print(f"{indents}done. ({round(self.elapsed, self.precision)}s)")
 
     def child(self, message: str):
         """
