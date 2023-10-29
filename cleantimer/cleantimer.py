@@ -1,4 +1,6 @@
 from typing import Any, Callable
+from datetime import datetime
+
 from contexttimer import Timer
 from pandas import DataFrame, Series, concat
 from tqdm import tqdm
@@ -27,7 +29,8 @@ class CTimer(Timer):
             CTimer: The CTimer object.
         """
         super().__enter__(*args, **kwargs)
-        print(self.message + "...", end="", flush=True)
+        intro = f"{self.message} ({datetime.now().time().strftime('%-I:%M%p')})..."
+        print(intro, end="", flush=True)
         return self
 
     def __exit__(self, exception, *args, **kwargs):
