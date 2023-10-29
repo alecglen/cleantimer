@@ -74,6 +74,19 @@ def test_nested_child_timers_are_indented_correctly(capsys: CaptureFixture):
     assert lines[5] == ""
 
 
+def test_child_timer_uses_its_own_precision(capsys: CaptureFixture):
+    with CTimer("Parent") as parent_timer:
+        with parent_timer.child("Child", precision=2):
+            sleep(0.089123)
+
+    lines = str(capsys.readouterr().out).split("\n")
+    assert len(lines) == 4
+    assert lines[0] == f"Parent ({now})..."
+    assert lines[1] == f"\tChild ({now})...done. (0.09s)"
+    assert lines[2] == "done. (0.1s)"
+    assert lines[3] == ""
+
+
 def test_timer_passes_through_exceptions_and_stops_run(capsys: CaptureFixture):
     with raises(TypeError):
         with CTimer("Test Timer"):

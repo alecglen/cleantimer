@@ -53,7 +53,7 @@ class CTimer(Timer):
 
             print(f"{indents}done. ({runtime}s)")
 
-    def child(self, message: str):
+    def child(self, message: str, precision: int | None = None):
         """
         Creates a new CTimer object with an indented message.
 
@@ -69,7 +69,7 @@ class CTimer(Timer):
             whitespace = "\n" + whitespace
             self.is_first_child = False
 
-        return CTimer(whitespace + message, precision=self.precision)
+        return CTimer(whitespace + message, precision=(precision or self.precision))
 
     def progress_apply(
         self,
