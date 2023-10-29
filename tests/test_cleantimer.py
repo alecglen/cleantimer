@@ -109,48 +109,43 @@ def test_message_contains_special_characters(capsys: CaptureFixture):
     assert capsys.readouterr().out == f"$@! ({now})...done. (0.0s)\n"
 
 
+df = DataFrame({"A": [1, 2, 3, 4], "B": [4, 4, 5, 5]})
+
+
 def _action(row):
     return row.A + row.B
 
 
 def test_progress_apply_succeeds():
-    df = DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
-
     with CTimer("Test") as timer:
         timer.progress_apply(df, _action)
 
 
 def test_progress_apply_applies_the_row_operation():
-    df = DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
-
     with CTimer("Test") as timer:
         result = timer.progress_apply(df, _action)
 
-    assert result.equals(Series([5, 7, 9]))
+    assert result.equals(Series([5, 6, 8, 9]))
 
 
 def test_progress_apply_with_empty_dataframe():
-    df = DataFrame()
+    empty_df = DataFrame()
 
     with CTimer("Test") as timer:
         with raises(Exception):
-            timer.progress_apply(df, _action)
+            timer.progress_apply(empty_df, _action)
 
 
 def test_progress_apply_prints_header_and_done_statements(capsys: CaptureFixture):
-    df = DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
-
     with CTimer("Test") as timer:
         timer.progress_apply(df, _action)
 
     assert capsys.readouterr().out == f"Test ({now})...\ndone. (0.0s)\n"
 
 
-def test_progress_apply_default_renders_single_indented_unnamed_progress_bar(
+def test_progress_apply_default_logs_single_indented_unnamed_progress_bar(
     capsys: CaptureFixture,
 ):
-    df = DataFrame({"A": [1, 2, 3, 4], "B": [4, 4, 5, 5]})
-
     with CTimer("Test") as timer:
         timer.progress_apply(df, _action)
 
@@ -164,28 +159,37 @@ def test_progress_apply_default_renders_single_indented_unnamed_progress_bar(
     )
 
 
-def test_progress_apply_succeeds_with_split():
-    df = DataFrame({"A": [1, 2, 3], "B": [4, 5, 6]})
+def test_progress_apply_with_message_logs_named_progress_bar(
+    capsys: CaptureFixture,
+):
+    with CTimer("Test") as timer:
+        timer.progress_apply(df, _action, message="TestBar")
 
+    buffer = capsys.readouterr()
+    assert buffer.out == f"Test ({now})...\ndone. (0.0s)\n"
+
+    err_lines = buffer.err.split("\n")
+    assert len(err_lines) == 2
+    assert err_lines[0].startswith(
+        "\r    TestBar:   0%|          | 0/4 [00:00<?, ?it/s]\r    TestBar: 100%|██████████| 4/4"
+    )
+
+
+def test_progress_apply_succeeds_with_split():
     with CTimer("Test") as timer:
         timer.progress_apply(df, _action, split_col="B")
 
 
 def test_progress_apply_applies_the_row_operation_with_split():
-    df = DataFrame({"A": [1, 2, 3, 4], "B": [4, 4, 5, 5]})
-
     with CTimer("Test") as timer:
         result = timer.progress_apply(df, _action, split_col="B")
-        print(result)
 
     assert list(result) == [5, 6, 8, 9]
 
 
-def test_progress_apply_when_split_col_is_defined_renders_partitioned_named_progress_bars(
+def test_progress_apply_when_split_col_is_defined_logs_partitioned_named_progress_bars(
     capsys: CaptureFixture,
 ):
-    df = DataFrame({"A": [1, 2, 3, 4], "B": [4, 4, 5, 5]})
-
     with CTimer("Test") as timer:
         timer.progress_apply(df, _action, split_col="B")
 
@@ -195,8 +199,27 @@ def test_progress_apply_when_split_col_is_defined_renders_partitioned_named_prog
     err_lines = buffer.err.split("\n")
     assert len(err_lines) == 3
     assert err_lines[0].startswith(
-        "\r    :   0%|          | 0/2 [00:00<?, ?it/s]\r    : 100%|██████████| 2/2"
+        "\r    4:   0%|          | 0/2 [00:00<?, ?it/s]\r    4: 100%|██████████| 2/2"
     )
     assert err_lines[1].startswith(
-        "\r    :   0%|          | 0/2 [00:00<?, ?it/s]\r    : 100%|██████████| 2/2"
+        "\r    5:   0%|          | 0/2 [00:00<?, ?it/s]\r    5: 100%|██████████| 2/2"
+    )
+
+
+def test_progress_apply_with_split_and_message_logs_partitioned_named_progress_bars(
+    capsys: CaptureFixture,
+):
+    with CTimer("Test") as timer:
+        timer.progress_apply(df, _action, split_col="B", message="Mult {}")
+
+    buffer = capsys.readouterr()
+    assert buffer.out == f"Test ({now})...\n\ndone. (0.0s)\n"
+
+    err_lines = buffer.err.split("\n")
+    assert len(err_lines) == 3
+    assert err_lines[0].startswith(
+        "\r    Mult 4:   0%|          | 0/2 [00:00<?, ?it/s]\r    Mult 4: 100%|██████████| 2/2"
+    )
+    assert err_lines[1].startswith(
+        "\r    Mult 5:   0%|          | 0/2 [00:00<?, ?it/s]\r    Mult 5: 100%|██████████| 2/2"
     )

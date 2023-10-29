@@ -84,7 +84,7 @@ class CTimer(Timer):
         Applies a function to a DataFrame with progress tracking.
 
         If split_col is not provided, the function is applied to the entire DataFrame.
-        If split_col is provided, the function is applied to subsets of
+        If split_col is provided, the function is applied in subsets of
         the DataFrame based on unique values in the split_col column.
 
         Args:
@@ -102,9 +102,8 @@ class CTimer(Timer):
         output = DataFrame()
         for key in df[split_col].drop_duplicates().to_list():
             subset = df.loc[df[split_col] == key]
-            subset_results = self.__progress_apply_single(
-                subset, action, message.format(key)
-            )
+            msg = message.format(key) if message else str(key)
+            subset_results = self.__progress_apply_single(subset, action, msg)
             output = concat([output, subset_results], ignore_index=True)
 
         if len(output.columns) == 1:
